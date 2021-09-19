@@ -39,7 +39,7 @@ public class Branch extends BaseEntity<Long> {
 
     @OneToMany
     @JoinColumn(name = "branch_id")
-    private List<Employee> employees;
+    private List<BaseEmployee> employees;
 
     @OneToOne
     @JoinColumn(name = "bank_ceo_id")
