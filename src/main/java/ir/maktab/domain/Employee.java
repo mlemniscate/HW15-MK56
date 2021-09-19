@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 @Setter
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class Employee extends BaseEmployee{
 }
