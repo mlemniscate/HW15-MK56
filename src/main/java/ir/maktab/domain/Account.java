@@ -5,6 +5,8 @@ import ir.maktab.domain.enums.AccountType;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = Account.TABLE_NAME)
@@ -14,6 +16,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Builder
 public class Account extends BaseEntity<Long> {
+
     public static final String TABLE_NAME = "accounts";
     public static final String ACCOUNT_NUMBER = "account_number";
     public static final String ACCOUNT_TYPE = "account_type";
@@ -22,11 +25,26 @@ public class Account extends BaseEntity<Long> {
 
     @Column(name = ACCOUNT_NUMBER)
     private String accountNumber;
+
     @Column(name = ACCOUNT_TYPE)
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
+
     @Column(name = BALANCE)
     private Integer balance;
+
     @Column(name = IS_DISABLED)
     private Boolean isDisabled;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+
+    @OneToOne
+    @JoinColumn(name = "credit_card_id", nullable = false)
+    private CreditCart creditCart;
+
+    @OneToMany
+    @JoinColumn(name = "account_id", nullable = false)
+    private List<Transaction> transactionList = new ArrayList<>();
 }
