@@ -30,6 +30,10 @@ public class BaseEmployee extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     private EmployeeRole employeeRole;
 
+    @ManyToOne
+    @JoinColumn(name = "branch_id")
+    private Branch branch;
+
     @Builder(builderMethodName = "baseEmployeeBuilder")
     public BaseEmployee(PersonInfo personInfo, String username, String password, EmployeeRole employeeRole) {
         this.personInfo = personInfo;

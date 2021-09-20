@@ -33,18 +33,18 @@ public class Account extends BaseEntity<Long> {
     @Column(name = BALANCE)
     private Integer balance;
 
-    @Column(name = IS_DISABLED)
-    private Boolean isDisabled;
+    @Column(name = IS_DISABLED, columnDefinition="tinyint(1) default 1")
+    private Boolean isDisabled = false;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     @OneToOne
-    @JoinColumn(name = "credit_card_id", nullable = false)
+    @JoinColumn(name = "credit_card_id")
     private CreditCart creditCart;
 
     @OneToMany
-    @JoinColumn(name = "account_id", nullable = false)
+    @JoinColumn(name = "account_id")
     private List<Transaction> transactionList = new ArrayList<>();
 }

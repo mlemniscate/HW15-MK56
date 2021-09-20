@@ -34,11 +34,15 @@ public class Branch extends BaseEntity<Long> {
     @Column(name = ADDRESS)
     private String address;
 
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "branch_id")
     private List<Account> accountList = new ArrayList<>();
 
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "branch_id")
+    @OneToMany(mappedBy = "branch",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<BaseEmployee> employees = new ArrayList<>();
+
+    public void addEmployee(BaseEmployee employee) {
+        employees.add(employee);
+        employee.setBranch(this);
+    }
 }

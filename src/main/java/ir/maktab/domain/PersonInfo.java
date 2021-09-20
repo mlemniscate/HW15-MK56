@@ -18,7 +18,7 @@ public class PersonInfo {
     public static final String EMAIL = "email";
     public static final String PHONE_NUMBER = "phone_number";
     public static final String ADDRESS = "address";
-    public static final String NATIONAL_NUMBER = "national_number";
+    public static final String NATIONAL_CODE = "national_code";
 
     @Column(name = FIRST_NAME)
     private String firstName;
@@ -30,7 +30,7 @@ public class PersonInfo {
     private String phoneNumber;
     @Column(name = ADDRESS)
     private String address;
-    @Column(name = NATIONAL_NUMBER)
-    private String nationalNumber;
+    @Column(name = NATIONAL_CODE)
+    private String nationalCode;
 
 }

@@ -26,12 +26,13 @@ public class MainApp {
         Branch branch = buildBranchFaker(faker);
         Employee employee1 = buildEmployeeFaker(faker);
         employee1.setUsername("userfake");
+        employee1.setBranch(branch);
         branch.getEmployees().add(employee1);
         IntStream.range(1, 50).forEach(item -> {
             Employee employee = buildEmployeeFaker(faker);
-            branch.getEmployees().add(employee);
+            branch.addEmployee(employee);
         });
-        branch.getEmployees().add(bankCEO);
+        branch.addEmployee(bankCEO);
         ApplicationContext.getBranchService().save(branch);
     }
 
@@ -58,7 +59,7 @@ public class MainApp {
                                 .address(faker.address().fullAddress())
                                 .email(faker.internet().emailAddress())
                                 .phoneNumber(faker.phoneNumber().phoneNumber())
-                                .nationalNumber(faker.code().isbn10())
+                                .nationalCode(faker.code().isbn10())
                                 .build()
                 )
                 .build();
@@ -77,7 +78,7 @@ public class MainApp {
                                 .address(faker.address().fullAddress())
                                 .email(faker.internet().emailAddress())
                                 .phoneNumber(faker.phoneNumber().phoneNumber())
-                                .nationalNumber(faker.code().isbn10())
+                                .nationalCode(faker.code().isbn10())
                                 .build()
                 )
                 .build();
