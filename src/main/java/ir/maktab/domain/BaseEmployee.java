@@ -12,8 +12,6 @@ import javax.persistence.*;
 @Setter
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class BaseEmployee extends BaseEntity<Long> {
 
     public static final String TABLE_NAME = "employees";
@@ -24,7 +22,7 @@ public class BaseEmployee extends BaseEntity<Long> {
     @Embedded
     private PersonInfo personInfo;
 
-    @Column(name = USERNAME)
+    @Column(name = USERNAME, nullable = false, unique = true)
     private String username;
     @Column(name = PASSWORD)
     private String password;
@@ -32,4 +30,11 @@ public class BaseEmployee extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     private EmployeeRole employeeRole;
 
+    @Builder(builderMethodName = "baseEmployeeBuilder")
+    public BaseEmployee(PersonInfo personInfo, String username, String password, EmployeeRole employeeRole) {
+        this.personInfo = personInfo;
+        this.username = username;
+        this.password = password;
+        this.employeeRole = employeeRole;
+    }
 }

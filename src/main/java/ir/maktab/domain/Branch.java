@@ -4,6 +4,7 @@ import ir.maktab.base.domain.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -35,13 +36,9 @@ public class Branch extends BaseEntity<Long> {
 
     @OneToMany
     @JoinColumn(name = "branch_id")
-    private List<Account> accountList;
+    private List<Account> accountList = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "branch_id")
-    private List<BaseEmployee> employees;
-
-    @OneToOne
-    @JoinColumn(name = "bank_ceo_id")
-    private BankCEO bankCEO;
+    private List<BaseEmployee> employees = new ArrayList<>();
 }

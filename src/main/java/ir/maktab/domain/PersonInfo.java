@@ -1,9 +1,16 @@
 package ir.maktab.domain;
 
+import lombok.*;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PersonInfo {
 
     public static final String FIRST_NAME = "first_name";
