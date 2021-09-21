@@ -23,7 +23,11 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
                 "Deposit Balance",
                 "Delete Account",
                 "Show Account",
-                "Show All Accounts of a Customer")));
+                "Show All Accounts of a Customer",
+                "Add Cart",
+                "Delete Cart",
+                "",
+                "")));
         this.loginEmployee = loginEmployee;
         this.employeeBranch = loginEmployee.getBranch();
     }

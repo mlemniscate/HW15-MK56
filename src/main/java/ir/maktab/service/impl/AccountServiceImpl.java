@@ -22,4 +22,9 @@ public class AccountServiceImpl extends BaseEntityServiceImpl<Account, Long, Acc
     public List<Account> getAllCustomerAccounts(Long customerId) {
         return repository.getAllCustomerAccounts(customerId);
     }
+
+    @Override
+    public Account getByCardId(Long cardId) {
+        return repository.getByCardId(cardId);
+    }
 }

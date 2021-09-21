@@ -22,6 +22,12 @@ import java.util.List;
                 query = "SELECT * " +
                         "FROM accounts a WHERE a.customer_id = ? ",
                 resultClass = Account.class
+        ),
+        @NamedNativeQuery(
+                name = "getByCardNum",
+                query = "SELECT * " +
+                        "FROM accounts a WHERE a.credit_card_id = ? ",
+                resultClass = Account.class
         )
 })
 public class Account extends BaseEntity<Long> {
@@ -43,17 +49,17 @@ public class Account extends BaseEntity<Long> {
     private Integer balance;
 
     @Column(name = IS_DISABLED, columnDefinition="tinyint(1) default 1")
-    private Boolean isDisabled = false;
+    private boolean isDisabled = false;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "credit_card_id")
-    private CreditCart creditCart;
+    private CreditCard creditCart;
 
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "account_id")
     private List<Transaction> transactionList = new ArrayList<>();
 

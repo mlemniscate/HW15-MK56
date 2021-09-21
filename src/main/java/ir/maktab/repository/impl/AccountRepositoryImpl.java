@@ -34,4 +34,13 @@ public class AccountRepositoryImpl extends BaseEntityRepositoryImpl<Account, Lon
                 .setParameter(1, customerId)
                 .getResultList();
     }
+
+    @Override
+    public Account getByCardId(Long cardId) {
+        List<Account> accounts = getEntityManager().createNamedQuery("getByCardNum", Account.class)
+                .setParameter(1, cardId)
+                .getResultList();
+        if (!Objects.isNull(accounts)) return accounts.get(0);
+        else return null;
+    }
 }

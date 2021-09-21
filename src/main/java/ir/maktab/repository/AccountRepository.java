@@ -9,4 +9,6 @@ public interface AccountRepository extends BaseEntityRepository<Account, Long> {
     Account findByAccountNumber(String accountNumber);
 
     List<Account> getAllCustomerAccounts(Long customerId);
+
+    Account getByCardId(Long cardId);
 }

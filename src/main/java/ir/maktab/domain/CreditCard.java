@@ -9,13 +9,13 @@ import javax.persistence.Table;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = CreditCart.TABLE_NAME)
+@Table(name = CreditCard.TABLE_NAME)
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreditCart extends BaseEntity<Long> {
+public class CreditCard extends BaseEntity<Long> {
 
     public static final String TABLE_NAME = "credit_cats";
     public static final String NUMBER = "number";
@@ -24,7 +24,7 @@ public class CreditCart extends BaseEntity<Long> {
     public static final String CVV2 = "cvv2";
     public static final String EXPIRATION_DATE = "expiration_date";
 
-    @Column(name = NUMBER)
+    @Column(name = NUMBER, nullable = false, unique = true)
     private String number;
     @Column(name = PASSWORD)
     private String password;
