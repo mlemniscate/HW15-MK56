@@ -37,7 +37,7 @@ public class ATMApp {
                         if(checkCardInformation(sourceCreditCard, cvv2, expireDate, secondPassword, sourceAccount, transferMoney)) {
                             CreditCard destinationCreditCard = ApplicationContext.getCreditCardService().getByCardNumber(destinationCardNum);
                             Account destinationAccount = ApplicationContext.getAccountService().getByCardId(destinationCreditCard.getId());
-                            sourceAccount.setBalance(sourceAccount.getBalance() - transferMoney);
+                            sourceAccount.setBalance(sourceAccount.getBalance() - transferMoney - 600);
                             destinationAccount.setBalance(destinationAccount.getBalance() + transferMoney);
                             ApplicationContext.getAccountService().save(sourceAccount);
                             ApplicationContext.getAccountService().save(destinationAccount);
