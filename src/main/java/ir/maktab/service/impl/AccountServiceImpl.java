@@ -5,6 +5,8 @@ import ir.maktab.domain.Account;
 import ir.maktab.repository.AccountRepository;
 import ir.maktab.service.AccountService;
 
+import java.util.List;
+
 public class AccountServiceImpl extends BaseEntityServiceImpl<Account, Long, AccountRepository> implements AccountService {
 
     public AccountServiceImpl(AccountRepository repository) {
@@ -14,5 +16,10 @@ public class AccountServiceImpl extends BaseEntityServiceImpl<Account, Long, Acc
     @Override
     public Account findByAccountNumber(String accountNumber) {
         return repository.findByAccountNumber(accountNumber);
+    }
+
+    @Override
+    public List<Account> getAllCustomerAccounts(Long customerId) {
+        return repository.getAllCustomerAccounts(customerId);
     }
 }

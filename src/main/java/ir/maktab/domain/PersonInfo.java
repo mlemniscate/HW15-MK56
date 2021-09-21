@@ -33,4 +33,15 @@ public class PersonInfo {
     @Column(name = NATIONAL_CODE)
     private String nationalCode;
 
+    @Override
+    public String toString() {
+        return "PersonInfo{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", address='" + address + '\'' +
+                ", nationalCode='" + nationalCode + '\'' +
+                '}';
+    }
 }

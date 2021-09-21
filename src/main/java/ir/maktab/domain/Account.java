@@ -15,6 +15,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
+@NamedNativeQueries({
+        @NamedNativeQuery(
+                name = "getAllCustomerAccounts",
+                query = "SELECT * " +
+                        "FROM accounts a WHERE a.customer_id = ? ",
+                resultClass = Account.class
+        )
+})
 public class Account extends BaseEntity<Long> {
 
     public static final String TABLE_NAME = "accounts";

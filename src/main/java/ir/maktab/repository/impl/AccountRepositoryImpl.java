@@ -27,4 +27,11 @@ public class AccountRepositoryImpl extends BaseEntityRepositoryImpl<Account, Lon
         if (Objects.isNull(accounts)) return null;
         else return accounts.get(0);
     }
+
+    @Override
+    public List<Account> getAllCustomerAccounts(Long customerId) {
+        return getEntityManager().createNamedQuery("getAllCustomerAccounts", Account.class)
+                .setParameter(1, customerId)
+                .getResultList();
+    }
 }

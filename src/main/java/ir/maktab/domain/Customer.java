@@ -23,4 +23,12 @@ public class Customer extends BaseEntity<Long> {
 
     @Column(name = CUSTOMER_NUMBER, unique = true, nullable = false)
     private Long customerNumber;
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "personInfo=" + personInfo +
+                ", customerNumber=" + customerNumber +
+                '}';
+    }
 }

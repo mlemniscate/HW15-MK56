@@ -9,6 +9,7 @@ import ir.maktab.util.ApplicationContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
@@ -29,7 +30,7 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
 
     @Override
     public Void runMenu() {
-        Account account;
+        Account account = null;
         while (true) {
             switch (getItemFromConsole()) {
                 case 1:
@@ -63,11 +64,20 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
                         System.out.println("Your account number isn't valid.");
                     }
                     break;
+                case 5:
+                    Long customerId = getCustomerId();
+                    List<Account> accountList = ApplicationContext.getAccountService().getAllCustomerAccounts(customerId);
+                    accountList.forEach(System.out::println);
+                    break;
                 case 10:
                     if (new CheckMenu("Are you sure you want to exit?").runMenu()) return null;
                     else break;
             }
         }
+    }
+
+    private Long getCustomerId() {
+        return Long.parseLong(new InputString("Enter your customer id: ").getStringInput());
     }
 
     private String getAccountNumber() {
