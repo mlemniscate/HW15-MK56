@@ -47,4 +47,16 @@ public class Account extends BaseEntity<Long> {
     @OneToMany
     @JoinColumn(name = "account_id")
     private List<Transaction> transactionList = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "accountNumber='" + accountNumber + '\'' +
+                ", accountType=" + accountType +
+                ", balance=" + balance +
+                ", isDisabled=" + isDisabled +
+                ", customer=" + customer +
+                ", creditCart=" + creditCart +
+                '}';
+    }
 }

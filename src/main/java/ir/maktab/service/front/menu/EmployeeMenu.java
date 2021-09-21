@@ -4,10 +4,12 @@ import com.github.javafaker.Faker;
 import ir.maktab.domain.*;
 import ir.maktab.domain.enums.AccountType;
 import ir.maktab.service.front.input.InputInt;
+import ir.maktab.service.front.input.InputString;
 import ir.maktab.util.ApplicationContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
 
@@ -17,7 +19,7 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
     public EmployeeMenu(BaseEmployee loginEmployee) {
         super(new ArrayList<>(Arrays.asList(
                 "Add Account",
-                "Edit Account",
+                "Deposit Balance",
                 "Delete Account",
                 "Show Account",
                 "Show All Accounts of a Customer")));
@@ -27,18 +29,49 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
 
     @Override
     public Void runMenu() {
+        Account account;
         while (true) {
             switch (getItemFromConsole()) {
                 case 1:
-                    Account account = getAccount();
+                    account = getAccount();
                     employeeBranch.getAccountList().add(account);
                     ApplicationContext.getBranchService().save(employeeBranch);
+                    break;
+                case 2:
+                    account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
+                    if(!Objects.isNull(account)) {
+                        int balance = getBalance();
+                        account.setBalance(account.getBalance() + balance);
+                        ApplicationContext.getAccountService().save(account);
+                    } else {
+                        System.out.println("Your account number isn't valid.");
+                    }
+                    break;
+                case 3:
+                    account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
+                    if(!Objects.isNull(account)) {
+                        ApplicationContext.getAccountService().delete(account);
+                    } else {
+                        System.out.println("Your account number isn't valid.");
+                    }
+                    break;
+                case 4:
+                    account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
+                    if(!Objects.isNull(account)) {
+                        System.out.println(account);
+                    } else {
+                        System.out.println("Your account number isn't valid.");
+                    }
                     break;
                 case 10:
                     if (new CheckMenu("Are you sure you want to exit?").runMenu()) return null;
                     else break;
             }
         }
+    }
+
+    private String getAccountNumber() {
+        return new InputString("Enter account number: ").getStringInput();
     }
 
     private Account getAccount() {

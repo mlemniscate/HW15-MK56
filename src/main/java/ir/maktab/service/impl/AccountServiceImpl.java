@@ -10,4 +10,9 @@ public class AccountServiceImpl extends BaseEntityServiceImpl<Account, Long, Acc
     public AccountServiceImpl(AccountRepository repository) {
         super(repository);
     }
+
+    @Override
+    public Account findByAccountNumber(String accountNumber) {
+        return repository.findByAccountNumber(accountNumber);
+    }
 }
