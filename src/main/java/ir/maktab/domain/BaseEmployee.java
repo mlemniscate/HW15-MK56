@@ -30,7 +30,7 @@ public class BaseEmployee extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     private EmployeeRole employeeRole;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "branch_id")
     private Branch branch;
 

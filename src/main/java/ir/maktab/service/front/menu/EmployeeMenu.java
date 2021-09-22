@@ -16,7 +16,6 @@ import java.util.Objects;
 public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
 
     private final BaseEmployee loginEmployee;
-    private final Branch employeeBranch;
 
     public EmployeeMenu(BaseEmployee loginEmployee) {
         super(new ArrayList<>(Arrays.asList(
@@ -30,7 +29,6 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
                 "Show CreditCard",
                 "Close")));
         this.loginEmployee = loginEmployee;
-        this.employeeBranch = loginEmployee.getBranch();
     }
 
     @Override
@@ -149,8 +147,8 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
 
     private void addAccount() {
         Account account = getAccount();
-        employeeBranch.getAccountList().add(account);
-        ApplicationContext.getBranchService().save(employeeBranch);
+        loginEmployee.getBranch().getAccountList().add(account);
+        ApplicationContext.getBaseEmployeeService().save(loginEmployee);
     }
 
     private Long getCustomerId() {
