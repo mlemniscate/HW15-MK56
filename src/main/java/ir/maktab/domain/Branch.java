@@ -42,8 +42,4 @@ public class Branch extends BaseEntity<Long> {
     @JoinColumn(name = "branch_id")
     private List<BaseEmployee> employees = new ArrayList<>();
 
-    public void addEmployee(BaseEmployee employee) {
-        employees.add(employee);
-        employee.setBranch(this);
-    }
 }
