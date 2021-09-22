@@ -21,9 +21,10 @@ public class CreditCardRepositoryImpl extends BaseEntityRepositoryImpl<CreditCar
 
     @Override
     public boolean existsByCardNumber(String cardNum) {
-        return getEntityManager().createQuery("select count(*) from CreditCard c where c.number = :number", Long.class)
+        boolean hasCard = getEntityManager().createQuery("select count(*) from CreditCard c where c.number = :number", Long.class)
                 .setParameter("number", cardNum)
-                .getResultList().size() > 0;
+                .getSingleResult() > 0;
+        return hasCard;
     }
 
     @Override

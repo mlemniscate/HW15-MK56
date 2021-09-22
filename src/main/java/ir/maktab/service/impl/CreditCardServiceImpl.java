@@ -13,8 +13,8 @@ public class CreditCardServiceImpl extends BaseEntityServiceImpl<CreditCard, Lon
     }
 
     @Override
-    public boolean existsByCardNumber(String destinationCartNum) {
-        return repository.existsByCardNumber(destinationCartNum);
+    public boolean existsByCardNumber(String cardNum) {
+        return repository.existsByCardNumber(cardNum);
     }
 
     @Override

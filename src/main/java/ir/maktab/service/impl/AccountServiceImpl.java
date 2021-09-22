@@ -27,4 +27,9 @@ public class AccountServiceImpl extends BaseEntityServiceImpl<Account, Long, Acc
     public Account getByCardId(Long cardId) {
         return repository.getByCardId(cardId);
     }
+
+    @Override
+    public Account getByCardNumber(String cardNumber) {
+        return repository.getByCardNumber(cardNumber);
+    }
 }

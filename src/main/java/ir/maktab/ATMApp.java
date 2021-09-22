@@ -6,47 +6,68 @@ import ir.maktab.service.front.input.InputString;
 import ir.maktab.service.front.menu.CheckMenu;
 import ir.maktab.service.front.menu.Menu;
 import ir.maktab.util.ApplicationContext;
+import ir.maktab.util.HibernateUtil;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ATMApp {
+
+    private static Account account;
+
     public static void main(String[] args) {
-        atmMenu();
+        HibernateUtil.getMainEntityManagerFactory().createEntityManager();
+        Menu menu = new Menu(new ArrayList<>(Arrays.asList("Enter to ATM", "Exit")));
+        while (true) {
+            switch (menu.getItemFromConsole()) {
+                case 1:
+                    String cartNumber = enterCartNumber();
+                    if(isValidCard(cartNumber)) {
+                        atmMenu();
+                    }
+                    break;
+                case 2:
+                    if (new CheckMenu("Are you sure you want to exit?").runMenu()) return;
+                    else break;
+            }
+        }
+
+    }
+
+    private static boolean isValidCard(String cartNumber) {
+        if(ApplicationContext.getCreditCardService().existsByCardNumber(cartNumber)) {
+            account = ApplicationContext.getAccountService().getByCardNumber(cartNumber);
+            for (int i = 0; i < 3; i++) {
+                String password = enterPassword();
+                if(account.getCreditCart().getPassword().equals(password)) {
+                    if(!account.isDisabled()) return true;
+                    else {
+                        System.out.println("Your account is disabled!");
+                        return false;
+                    }
+                } else {
+                    System.out.println("Your password is wrong!");
+                }
+            }
+            account.setDisabled(true);
+            ApplicationContext.getAccountService().save(account);
+        } else {
+            System.out.println("You card number is wrong!");
+        }
+        return false;
     }
 
     public static void atmMenu() {
         Menu menu = new Menu(new ArrayList<>(Arrays.asList(
-                "Cart to Cart Payment",
+                "Card to Card Payment",
                 "Set Or Edit Cart Second Password",
                 "Set Or Edit Cart First Password",
                 "Exit")));
         while (true) {
             switch (menu.getItemFromConsole()) {
                 case 1:
-                    String sourceCardNum = enterCartNumber();
-                    String destinationCardNum = enterCartNumber();
-                    Integer transferMoney = enterTransferMoney();
-                    if (checkFirstInformation(sourceCardNum, destinationCardNum, transferMoney)) {
-                        CreditCard sourceCreditCard = ApplicationContext.getCreditCardService().getByCardNumber(sourceCardNum);
-                        Account sourceAccount = ApplicationContext.getAccountService().getByCardId(sourceCreditCard.getId());
-                        Integer cvv2 = enterCVV2();
-                        LocalDate expireDate = enterExpireDate();
-                        String secondPassword = enterSecondPassword();
-                        if(checkCardInformation(sourceCreditCard, cvv2, expireDate, secondPassword, sourceAccount, transferMoney)) {
-                            CreditCard destinationCreditCard = ApplicationContext.getCreditCardService().getByCardNumber(destinationCardNum);
-                            Account destinationAccount = ApplicationContext.getAccountService().getByCardId(destinationCreditCard.getId());
-                            sourceAccount.setBalance(sourceAccount.getBalance() - transferMoney - 600);
-                            destinationAccount.setBalance(destinationAccount.getBalance() + transferMoney);
-                            ApplicationContext.getAccountService().save(sourceAccount);
-                            ApplicationContext.getAccountService().save(destinationAccount);
-                        } else {
-                            System.out.println("Your information is wrong!");
-                        }
-                    } else {
-                        System.out.println("Your information is wrong!");
-                    }
+                    cardToCardPayment();
                     break;
                 case 2:
                     String cartNumber = enterCartNumber();
@@ -60,14 +81,39 @@ public class ATMApp {
         }
     }
 
-    private static boolean checkCardInformation(CreditCard sourceCreditCard, Integer cvv2,
-                                                LocalDate expireDate, String secondPassword,
-                                                Account sourceAccount, Integer transferMoney) {
-        return sourceCreditCard.getCvv2().equals(cvv2) &&
-                sourceCreditCard.getSecondPassword().equals(secondPassword) &&
-                sourceCreditCard.getExpirationDate().equals(expireDate) &&
-                sourceAccount.getBalance() - 5000 > transferMoney &&
-                !sourceAccount.isDisabled();
+    private static void cardToCardPayment() {
+        String destinationCardNum = enterCartNumber();
+        Integer transferMoney = enterTransferMoney();
+        if (checkCardsAndTransferMoneyInfo(destinationCardNum, transferMoney)) {
+            Integer cvv2 = enterCVV2();
+            LocalDate expireDate = enterExpireDate();
+            String secondPassword = enterSecondPassword();
+            if(checkCardTransferInfo(cvv2, expireDate, secondPassword, transferMoney)) {
+                doCardToCardMoneyTransfer(destinationCardNum, transferMoney);
+            } else {
+                System.out.println("Your information is wrong!");
+            }
+        }
+    }
+
+    private static void doCardToCardMoneyTransfer(String destinationCardNum, Integer transferMoney) {
+        Account destinationAccount = ApplicationContext.getAccountService().getByCardNumber(destinationCardNum);
+        account.setBalance(account.getBalance() - transferMoney - 600);
+        destinationAccount.setBalance(destinationAccount.getBalance() + transferMoney);
+        ApplicationContext.getAccountService().save(account);
+        ApplicationContext.getAccountService().save(destinationAccount);
+    }
+
+    private static boolean checkCardTransferInfo(Integer cvv2, LocalDate expireDate,
+                                                 String secondPassword, Integer transferMoney) {
+        String msg = "";
+        msg += account.getCreditCart().getCvv2().equals(cvv2) ? "" : "Your cvv2 is wrong!\n";
+        msg += account.getCreditCart().getSecondPassword().equals(secondPassword) ? "" : "Your second password is wrong!\n";
+        msg += account.getCreditCart().getExpirationDate().equals(expireDate) ? "" : "Your expiration date is wrong!\n";
+        msg += account.getBalance() - 5000 > transferMoney ? "" : "Your transfer money is wrong!\n";
+        msg += !account.isDisabled() ? "" : "Your account is disabled.\n";
+        System.out.println(msg);
+        return  msg.equals("");
     }
 
     private static String enterSecondPassword() {
@@ -75,7 +121,12 @@ public class ATMApp {
                 .getStringInput();
     }
 
-    private static LocalDate enterExpireDate() {
+    private static String enterPassword() {
+        return new InputString("Enter your password: ","Your password must be 4 digit", "^\\d{4}$", null)
+                .getStringInput();
+    }
+
+        private static LocalDate enterExpireDate() {
         String stringInput = new InputString("Enter your credit card expire date: ", "^\\d{4}-\\d{1,2}-\\d{1,2}$")
                 .getStringInput();
         String[] splitDate = stringInput.split("-");
@@ -88,10 +139,12 @@ public class ATMApp {
         return Integer.parseInt(new InputString("Enter your cvv2: ").getStringInput());
     }
 
-    private static boolean checkFirstInformation(String sourceCartNum, String destinationCartNum, Integer transferMoney) {
-        return ApplicationContext.getCreditCardService().existsByCardNumber(sourceCartNum) &&
-                ApplicationContext.getCreditCardService().existsByCardNumber(destinationCartNum) &&
-                transferMoney < 3_000_000;
+    private static boolean checkCardsAndTransferMoneyInfo(String destinationCartNum, Integer transferMoney) {
+        String msg = "";
+        msg += ApplicationContext.getCreditCardService().existsByCardNumber(destinationCartNum) ? "" : "Your destination card number is wrong!\n";
+        msg += transferMoney < 3_000_000 ? "" : "Your transfer money is greater then 3,000,000\n";
+        System.out.println(msg);
+        return msg.equals("");
     }
 
     private static Integer enterTransferMoney() {
