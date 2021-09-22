@@ -30,6 +30,12 @@ import java.util.List;
                 resultClass = Account.class
         )
 })
+//@NamedQueries({
+//        @NamedQuery(
+//                name = "getAllCustomerAccountsJPQL",
+//                query = "SELECT a from Account a where a.customer.id = ?"
+//        )
+//})
 public class Account extends BaseEntity<Long> {
 
     public static final String TABLE_NAME = "accounts";

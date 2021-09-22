@@ -30,8 +30,8 @@ public class AccountRepositoryImpl extends BaseEntityRepositoryImpl<Account, Lon
 
     @Override
     public List<Account> getAllCustomerAccounts(Long customerId) {
-        return getEntityManager().createNamedQuery("getAllCustomerAccounts", Account.class)
-                .setParameter(1, customerId)
+        return getEntityManager().createQuery("select a from Account a where a.customer.id = :id", Account.class)
+                .setParameter("id", customerId)
                 .getResultList();
     }
 
