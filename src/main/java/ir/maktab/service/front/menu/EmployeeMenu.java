@@ -7,6 +7,7 @@ import ir.maktab.service.front.input.InputInt;
 import ir.maktab.service.front.input.InputString;
 import ir.maktab.util.ApplicationContext;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -92,6 +93,13 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
                 .balance(getBalance())
                 .customer(
                         getCustomerInfo(faker)
+                )
+                .creditCart(CreditCard.builder()
+                        .number(faker.number().digits(16))
+                        .cvv2(Integer.parseInt(faker.number().digits(4)))
+                        .expirationDate(LocalDate.of(2023, 12, 15))
+                        .password("1234")
+                        .build()
                 )
                 .build();
     }

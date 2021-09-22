@@ -38,7 +38,8 @@ public class Branch extends BaseEntity<Long> {
     @JoinColumn(name = "branch_id")
     private List<Account> accountList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "branch",cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "branch_id")
     private List<BaseEmployee> employees = new ArrayList<>();
 
     public void addEmployee(BaseEmployee employee) {

@@ -18,24 +18,13 @@ import java.util.List;
 
 @NamedNativeQueries({
         @NamedNativeQuery(
-                name = "getAllCustomerAccounts",
-                query = "SELECT * " +
-                        "FROM accounts a WHERE a.customer_id = ? ",
-                resultClass = Account.class
-        ),
-        @NamedNativeQuery(
                 name = "getByCardNum",
                 query = "SELECT * " +
                         "FROM accounts a WHERE a.credit_card_id = ? ",
                 resultClass = Account.class
         )
 })
-//@NamedQueries({
-//        @NamedQuery(
-//                name = "getAllCustomerAccountsJPQL",
-//                query = "SELECT a from Account a where a.customer.id = ?"
-//        )
-//})
+
 public class Account extends BaseEntity<Long> {
 
     public static final String TABLE_NAME = "accounts";
