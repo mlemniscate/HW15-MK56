@@ -15,16 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
-@NamedNativeQueries({
-        @NamedNativeQuery(
-                name = "getByCardNum",
-                query = "SELECT * " +
-                        "FROM accounts a WHERE a.credit_card_id = ? ",
-                resultClass = Account.class
-        )
-})
-
 public class Account extends BaseEntity<Long> {
 
     public static final String TABLE_NAME = "accounts";
