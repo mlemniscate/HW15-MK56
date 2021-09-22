@@ -24,57 +24,133 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
                 "Deposit Balance",
                 "Delete Account",
                 "Show Account",
-                "Show All Accounts of a Customer")));
+                "Show All Accounts of a Customer",
+                "Delete CreditCard",
+                "Add CreditCard",
+                "Show CreditCard",
+                "Close")));
         this.loginEmployee = loginEmployee;
         this.employeeBranch = loginEmployee.getBranch();
     }
 
     @Override
     public Void runMenu() {
-        Account account = null;
         while (true) {
             switch (getItemFromConsole()) {
                 case 1:
-                    account = getAccount();
-                    employeeBranch.getAccountList().add(account);
-                    ApplicationContext.getBranchService().save(employeeBranch);
+                    addAccount();
                     break;
                 case 2:
-                    account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
-                    if(!Objects.isNull(account)) {
-                        int balance = getBalance();
-                        account.setBalance(account.getBalance() + balance);
-                        ApplicationContext.getAccountService().save(account);
-                    } else {
-                        System.out.println("Your account number isn't valid.");
-                    }
+                    depositBalance();
                     break;
                 case 3:
-                    account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
-                    if(!Objects.isNull(account)) {
-                        ApplicationContext.getAccountService().delete(account);
-                    } else {
-                        System.out.println("Your account number isn't valid.");
-                    }
+                    deleteAccount();
                     break;
                 case 4:
-                    account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
-                    if(!Objects.isNull(account)) {
-                        System.out.println(account);
-                    } else {
-                        System.out.println("Your account number isn't valid.");
-                    }
+                    showAccount();
                     break;
                 case 5:
-                    Long customerId = getCustomerId();
-                    List<Account> accountList = ApplicationContext.getAccountService().getAllCustomerAccounts(customerId);
-                    accountList.forEach(System.out::println);
+                    showAllCustomerAccounts();
                     break;
-                case 10:
+                case 6:
+                    deleteCreditCard();
+                    break;
+                case 7:
+                    addCreditCard();
+                    break;
+                case 8:
+                    showCreditCard();
+                    break;
+                case 9:
                     if (new CheckMenu("Are you sure you want to exit?").runMenu()) return null;
                     else break;
             }
         }
+    }
+
+    private void showCreditCard() {
+        String creditCardNumber = getCreditCardNumber();
+        if(ApplicationContext.getCreditCardService().existsByCardNumber(creditCardNumber)){
+            CreditCard creditCard = ApplicationContext.getCreditCardService().getByCardNumber(creditCardNumber);
+            System.out.println(creditCard);
+        } else {
+            System.out.println("Credit Card number is wrong!");
+        }
+    }
+
+    private String getCreditCardNumber() {
+        return new InputString("Enter credit card number: ").getStringInput();
+    }
+
+    private void addCreditCard() {
+        Account account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
+        if(!Objects.isNull(account)) {
+            if(account.getCreditCart() == null) {
+                account.setCreditCart(buildCreditCard());
+                ApplicationContext.getAccountService().save(account);
+            } else {
+                System.out.println("This account has a credit card.");
+            }
+        } else {
+            System.out.println("Your account number is wrong!");
+        }
+    }
+
+    private void deleteCreditCard() {
+        Account account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
+        if(!Objects.isNull(account)) {
+            CreditCard creditCart = account.getCreditCart();
+            if(creditCart != null) {
+                account.setCreditCart(null);
+                ApplicationContext.getAccountService().save(account);
+                ApplicationContext.getCreditCardService().delete(creditCart);
+            } else {
+                System.out.println("This account has not a credit card.");
+            }
+        } else {
+            System.out.println("Your ");
+        }
+    }
+
+    private void showAllCustomerAccounts() {
+        Long customerId = getCustomerId();
+        List<Account> accountList = ApplicationContext.getAccountService().getAllCustomerAccounts(customerId);
+        accountList.forEach(System.out::println);
+    }
+
+    private void showAccount() {
+        Account account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
+        if(!Objects.isNull(account)) {
+            System.out.println(account);
+        } else {
+            System.out.println("Your account number isn't valid.");
+        }
+    }
+
+    private void deleteAccount() {
+        Account account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
+        if(!Objects.isNull(account)) {
+            ApplicationContext.getAccountService().delete(account);
+        } else {
+            System.out.println("Your account number isn't valid.");
+        }
+    }
+
+    private void depositBalance() {
+        Account account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
+        if(!Objects.isNull(account)) {
+            int balance = getBalance();
+            account.setBalance(account.getBalance() + balance);
+            ApplicationContext.getAccountService().save(account);
+        } else {
+            System.out.println("Your account number isn't valid.");
+        }
+    }
+
+    private void addAccount() {
+        Account account = getAccount();
+        employeeBranch.getAccountList().add(account);
+        ApplicationContext.getBranchService().save(employeeBranch);
     }
 
     private Long getCustomerId() {
@@ -92,19 +168,24 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
                 .accountType(getAccountType())
                 .balance(getBalance())
                 .customer(
-                        getCustomerInfo(faker)
+                        buildCustomer(faker)
                 )
-                .creditCart(CreditCard.builder()
-                        .number(faker.number().digits(16))
-                        .cvv2(Integer.parseInt(faker.number().digits(4)))
-                        .expirationDate(LocalDate.of(2023, 12, 15))
-                        .password("1234")
-                        .build()
+                .creditCart(buildCreditCard()
                 )
                 .build();
     }
 
-    private Customer getCustomerInfo(Faker faker) {
+    private CreditCard buildCreditCard() {
+        Faker faker = new Faker();
+        return CreditCard.builder()
+                .number(faker.number().digits(16))
+                .cvv2(Integer.parseInt(faker.number().digits(4)))
+                .expirationDate(LocalDate.of(2023, 12, 15))
+                .password("1234")
+                .build();
+    }
+
+    private Customer buildCustomer(Faker faker) {
         Customer customer = new Customer(
                 new PersonInfo(
                         faker.name().firstName(),

@@ -34,4 +34,15 @@ public class CreditCard extends BaseEntity<Long> {
     private Integer cvv2;
     @Column(name = EXPIRATION_DATE)
     private LocalDate expirationDate;
+
+    @Override
+    public String toString() {
+        return "CreditCard{" +
+                "number='" + number + '\'' +
+                ", password='" + password + '\'' +
+                ", secondPassword='" + secondPassword + '\'' +
+                ", cvv2=" + cvv2 +
+                ", expirationDate=" + expirationDate +
+                '}';
+    }
 }
