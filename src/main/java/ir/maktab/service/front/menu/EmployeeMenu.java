@@ -108,7 +108,7 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
                 System.out.println("This account has not a credit card.");
             }
         } else {
-            System.out.println("Your ");
+            System.out.println("Your account number is wrong!");
         }
     }
 
@@ -182,6 +182,7 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
                 .cvv2(Integer.parseInt(faker.number().digits(4)))
                 .expirationDate(LocalDate.of(2023, 12, 15))
                 .password("1234")
+                .secondPassword("123456")
                 .build();
     }
 

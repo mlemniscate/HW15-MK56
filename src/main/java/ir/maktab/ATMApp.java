@@ -1,7 +1,6 @@
 package ir.maktab;
 
 import ir.maktab.domain.Account;
-import ir.maktab.domain.CreditCard;
 import ir.maktab.service.front.input.InputString;
 import ir.maktab.service.front.menu.CheckMenu;
 import ir.maktab.service.front.menu.Menu;
@@ -70,10 +69,15 @@ public class ATMApp {
                     cardToCardPayment();
                     break;
                 case 2:
-                    String cartNumber = enterCartNumber();
-                    if(ApplicationContext.getCreditCardService().existsByCardNumber(cartNumber)) {
-                        CreditCard card = ApplicationContext.getCreditCardService().getByCardNumber(cartNumber);
-                    } else System.out.println("Your cardNumber is wrong!");
+                    String secondPassword = enterSecondPassword();
+                    account.getCreditCart().setSecondPassword(secondPassword);
+                    ApplicationContext.getAccountService().save(account);
+                    break;
+                case 3:
+                    String password = enterPassword();
+                    account.getCreditCart().setPassword(password);
+                    ApplicationContext.getAccountService().save(account);
+                    break;
                 case 4:
                     if (new CheckMenu("Are you sure you want to exit?").runMenu()) return;
                     else break;
