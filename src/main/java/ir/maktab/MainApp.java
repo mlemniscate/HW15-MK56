@@ -15,22 +15,16 @@ import java.util.stream.IntStream;
 public class MainApp {
     public static void main(String[] args) {
         HibernateUtil.getMainEntityManagerFactory().createEntityManager();
-        enterSomeEmployees();
-        enterSomeEmployees();
-        enterSomeCustomerAccountCreditCard();
+//        enterData();
         new FirstMenu().runMenu();
+//        List<Account> allCustomerAccounts = ApplicationContext.getAccountService().getAllCustomerAccounts(103L);
+//        System.out.println(ApplicationContext.getBaseEmployeeService().findById(102L));
+//        System.out.println(ApplicationContext.getCustomerService().findById(103L));
+//        System.out.println(ApplicationContext.getAccountService().findById(50L));
+//        allCustomerAccounts.forEach(System.out::println);
+
     }
 
-    private static void enterSomeCustomerAccountCreditCard() {
-        Faker faker = new Faker();
-        IntStream.range(1, 11).forEach(item -> {
-            Customer customer = buildCustomer(faker);
-            Account account1 = buildAccount(faker, customer, AccountType.SAVING);
-            Account account2 = buildAccount(faker, customer, AccountType.DEPOSIT);
-            ApplicationContext.getAccountService().save(account1);
-            ApplicationContext.getAccountService().save(account2);
-        });
-    }
 
     private static Account buildAccount(Faker faker, Customer customer, AccountType accountType) {
         return Account.builder()
@@ -67,19 +61,24 @@ public class MainApp {
                 .build();
     }
 
-    private static void enterSomeEmployees() {
+    private static void enterData() {
         Faker faker = new Faker();
         BankCEO bankCEO = buildBankCEOFaker(faker);
         Branch branch = buildBranchFaker(faker);
-//        Employee employee1 = buildEmployeeFaker(faker);
-//        employee1.setUsername("userfake");
-//        employee1.setBranch(branch);
-//        branch.getEmployees().add(employee1);
+        Employee employee1 = buildEmployeeFaker(faker);
+        employee1.setUsername("userfake");
+        employee1.setBranch(branch);
+        branch.getEmployees().add(employee1);
         IntStream.range(1, 50).forEach(item -> {
             Employee employee = buildEmployeeFaker(faker);
-            branch.addEmployee(employee);
+            branch.getEmployees().add(employee);
         });
-        branch.addEmployee(bankCEO);
+        branch.getEmployees().add(bankCEO);
+        IntStream.range(1, 11).forEach(item -> {
+            Customer customer = buildCustomer(faker);
+            branch.getAccountList().add(buildAccount(faker, customer, AccountType.SAVING));
+            branch.getAccountList().add(buildAccount(faker, customer, AccountType.DEPOSIT));
+        });
         ApplicationContext.getBranchService().save(branch);
     }
 
@@ -90,6 +89,7 @@ public class MainApp {
                 .name(faker.name().title())
                 .employees(new ArrayList<>())
                 .code(faker.code().asin())
+                .accountList(new ArrayList<>())
                 .build();
     }
 

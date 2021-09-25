@@ -13,13 +13,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
+public class EmployeeMenu extends Menu implements RunnableMenu<Void> {
 
     private final BaseEmployee loginEmployee;
 
     public EmployeeMenu(BaseEmployee loginEmployee) {
         super(new ArrayList<>(Arrays.asList(
                 "Add Account",
+                "Add Account to Existing Customer",
                 "Deposit Balance",
                 "Delete Account",
                 "Show Account",
@@ -39,36 +40,47 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
                     addAccount();
                     break;
                 case 2:
-                    depositBalance();
+                    addAccountToCustomer();
                     break;
                 case 3:
-                    deleteAccount();
+                    depositBalance();
                     break;
                 case 4:
-                    showAccount();
+                    deleteAccount();
                     break;
                 case 5:
-                    showAllCustomerAccounts();
+                    showAccount();
                     break;
                 case 6:
-                    deleteCreditCard();
+                    showAllCustomerAccounts();
                     break;
                 case 7:
-                    addCreditCard();
+                    deleteCreditCard();
                     break;
                 case 8:
-                    showCreditCard();
+                    addCreditCard();
                     break;
                 case 9:
+                    showCreditCard();
+                    break;
+                case 10:
                     if (new CheckMenu("Are you sure you want to exit?").runMenu()) return null;
                     else break;
             }
         }
     }
 
+    private void addAccountToCustomer() {
+        Customer customer = ApplicationContext.getCustomerService().findById(getCustomerId());
+        Account account = getAccount();
+        account.setCustomer(customer);
+        loginEmployee.getBranch().getAccountList().add(account);
+        ApplicationContext.getBaseEmployeeService().save(loginEmployee);
+    }
+
     private void showCreditCard() {
         String creditCardNumber = getCreditCardNumber();
-        if(ApplicationContext.getCreditCardService().existsByCardNumber(creditCardNumber)){
+        if (ApplicationContext.getCreditCardService().existsByCardNumber(creditCardNumber)) {
             CreditCard creditCard = ApplicationContext.getCreditCardService().getByCardNumber(creditCardNumber);
             System.out.println(creditCard);
         } else {
@@ -82,8 +94,8 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
 
     private void addCreditCard() {
         Account account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
-        if(!Objects.isNull(account)) {
-            if(account.getCreditCart() == null) {
+        if (!Objects.isNull(account)) {
+            if (account.getCreditCart() == null) {
                 account.setCreditCart(buildCreditCard());
                 ApplicationContext.getAccountService().save(account);
             } else {
@@ -96,9 +108,9 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
 
     private void deleteCreditCard() {
         Account account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
-        if(!Objects.isNull(account)) {
+        if (!Objects.isNull(account)) {
             CreditCard creditCart = account.getCreditCart();
-            if(creditCart != null) {
+            if (creditCart != null) {
                 account.setCreditCart(null);
                 ApplicationContext.getAccountService().save(account);
                 ApplicationContext.getCreditCardService().delete(creditCart);
@@ -118,7 +130,7 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
 
     private void showAccount() {
         Account account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
-        if(!Objects.isNull(account)) {
+        if (!Objects.isNull(account)) {
             System.out.println(account);
         } else {
             System.out.println("Your account number isn't valid.");
@@ -127,8 +139,15 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
 
     private void deleteAccount() {
         Account account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
-        if(!Objects.isNull(account)) {
+        if (!Objects.isNull(account)) {
+            Customer customer = account.getCustomer();
+            loginEmployee.getBranch().getAccountList().remove(account);
+            ApplicationContext.getBaseEmployeeService().save(loginEmployee);
             ApplicationContext.getAccountService().delete(account);
+            if (ApplicationContext.getAccountService().getAllCustomerAccounts(
+                            customer.getId()).size() == 0) {
+                ApplicationContext.getCustomerService().delete(customer);
+            }
         } else {
             System.out.println("Your account number isn't valid.");
         }
@@ -136,7 +155,7 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
 
     private void depositBalance() {
         Account account = ApplicationContext.getAccountService().findByAccountNumber(getAccountNumber());
-        if(!Objects.isNull(account)) {
+        if (!Objects.isNull(account)) {
             int balance = getBalance();
             account.setBalance(account.getBalance() + balance);
             ApplicationContext.getAccountService().save(account);
@@ -185,7 +204,7 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
     }
 
     private Customer buildCustomer(Faker faker) {
-        Customer customer = new Customer(
+        return new Customer(
                 new PersonInfo(
                         faker.name().firstName(),
                         faker.name().lastName(),
@@ -196,12 +215,10 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void>{
                 ),
                 Long.parseLong(faker.number().digits(12))
         );
-        ApplicationContext.getCustomerService().save(customer);
-        return customer;
     }
 
     private Integer getBalance() {
-        return new InputInt("Enter your balance: ", 1_000_000, 30_000,null )
+        return new InputInt("Enter your balance: ", 1_000_000, 30_000, null)
                 .getIntInput();
     }
 

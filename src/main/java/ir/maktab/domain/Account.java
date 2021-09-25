@@ -23,7 +23,7 @@ public class Account extends BaseEntity<Long> {
     public static final String BALANCE = "balance";
     public static final String IS_DISABLED = "is_disabled";
 
-    @Column(name = ACCOUNT_NUMBER)
+    @Column(name = ACCOUNT_NUMBER, unique = true, nullable = false)
     private String accountNumber;
 
     @Column(name = ACCOUNT_TYPE)

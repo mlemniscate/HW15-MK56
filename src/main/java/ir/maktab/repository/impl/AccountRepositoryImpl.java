@@ -6,7 +6,6 @@ import ir.maktab.repository.AccountRepository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
-import java.util.Objects;
 
 public class AccountRepositoryImpl extends BaseEntityRepositoryImpl<Account, Long> implements AccountRepository {
 
@@ -24,8 +23,8 @@ public class AccountRepositoryImpl extends BaseEntityRepositoryImpl<Account, Lon
         List<Account> accounts = getEntityManager().createQuery(
                 " from Account a where a.accountNumber = :number", Account.class
         ).setParameter("number", accountNumber).getResultList();
-        if (Objects.isNull(accounts)) return null;
-        else return accounts.get(0);
+        if (accounts.size() > 0) return accounts.get(0);
+        else return null;
     }
 
     @Override

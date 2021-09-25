@@ -41,4 +41,14 @@ public class BaseEmployee extends BaseEntity<Long> {
         this.password = password;
         this.employeeRole = employeeRole;
     }
+
+    @Override
+    public String toString() {
+        return "BaseEmployee{" +
+                "personInfo=" + personInfo +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", employeeRole=" + employeeRole +
+                '}';
+    }
 }
