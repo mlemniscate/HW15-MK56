@@ -8,6 +8,7 @@ import ir.maktab.service.front.input.InputString;
 import ir.maktab.util.ApplicationContext;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +29,7 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void> {
                 "Delete CreditCard",
                 "Add CreditCard",
                 "Show CreditCard",
+                "Show Transactions",
                 "Close")));
         this.loginEmployee = loginEmployee;
     }
@@ -64,10 +66,30 @@ public class EmployeeMenu extends Menu implements RunnableMenu<Void> {
                     showCreditCard();
                     break;
                 case 10:
+                    showTransactions();
+                    break;
+                case 11:
                     if (new CheckMenu("Are you sure you want to exit?").runMenu()) return null;
                     else break;
             }
         }
+    }
+
+    private void showTransactions() {
+        String accountNumber = getAccountNumber();
+        LocalDateTime fromDate = enterDate("start");
+        LocalDateTime toDate = enterDate("end");
+        List<Transaction> transactions = ApplicationContext.getTransactionService().getTransactionsFromTo(accountNumber, fromDate, toDate);
+        transactions.forEach(System.out::println);
+    }
+
+    private static LocalDateTime enterDate(String dateName) {
+        String stringInput = new InputString("Enter your "+ dateName + " date: ", "^\\d{4}-\\d{1,2}-\\d{1,2}$")
+                .getStringInput();
+        String[] splitDate = stringInput.split("-");
+        return LocalDateTime.of(Integer.parseInt(splitDate[0]),
+                Integer.parseInt(splitDate[1]),
+                Integer.parseInt(splitDate[2]), 0, 0, 0);
     }
 
     private void addAccountToCustomer() {

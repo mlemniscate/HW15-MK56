@@ -29,8 +29,20 @@ public class Transaction extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
     @Column(name = MONEY_AMOUNT)
-    private Double moneyAmount;
+    private Integer moneyAmount;
     @Column(name = TRANSFER_ACCOUNT_ID)
     private Long transferAccountId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
 
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "date=" + date +
+                ", transactionType=" + transactionType +
+                ", moneyAmount=" + moneyAmount +
+                ", transferAccountId=" + transferAccountId +
+                '}';
+    }
 }

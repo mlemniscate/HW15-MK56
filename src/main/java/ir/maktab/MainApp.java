@@ -4,12 +4,16 @@ import com.github.javafaker.Faker;
 import ir.maktab.domain.*;
 import ir.maktab.domain.enums.AccountType;
 import ir.maktab.domain.enums.EmployeeRole;
+import ir.maktab.domain.enums.TransactionType;
 import ir.maktab.service.front.menu.FirstMenu;
 import ir.maktab.util.ApplicationContext;
 import ir.maktab.util.HibernateUtil;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class MainApp {
@@ -41,6 +45,26 @@ public class MainApp {
                                 .secondPassword("123456")
                                 .build()
                 )
+                .transactionList(getTransactionList())
+                .build();
+    }
+
+    private static List<Transaction> getTransactionList() {
+        Faker faker = new Faker();
+        ArrayList<Transaction> transactions = new ArrayList<>();
+        IntStream.range(0, 30).forEach(item -> {
+            Date date = faker.date().between(new Date(System.currentTimeMillis() - 100_000_000_000L), new Date(System.currentTimeMillis()));
+            transactions.add(buildTransaction(date));
+        });
+        return transactions;
+    }
+
+    private static Transaction buildTransaction(Date date) {
+        return Transaction.builder()
+                .transactionType(TransactionType.TRANSFER)
+                .date(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime())
+                .transferAccountId(2L)
+                .moneyAmount(200000)
                 .build();
     }
 

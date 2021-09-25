@@ -1,6 +1,8 @@
 package ir.maktab;
 
 import ir.maktab.domain.Account;
+import ir.maktab.domain.Transaction;
+import ir.maktab.domain.enums.TransactionType;
 import ir.maktab.service.front.input.InputString;
 import ir.maktab.service.front.menu.CheckMenu;
 import ir.maktab.service.front.menu.Menu;
@@ -8,6 +10,7 @@ import ir.maktab.util.ApplicationContext;
 import ir.maktab.util.HibernateUtil;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -22,7 +25,7 @@ public class ATMApp {
             switch (menu.getItemFromConsole()) {
                 case 1:
                     String cartNumber = enterCartNumber();
-                    if(isValidCard(cartNumber)) {
+                    if (isValidCard(cartNumber)) {
                         atmMenu();
                     }
                     break;
@@ -31,16 +34,15 @@ public class ATMApp {
                     else break;
             }
         }
-
     }
 
     private static boolean isValidCard(String cartNumber) {
-        if(ApplicationContext.getCreditCardService().existsByCardNumber(cartNumber)) {
+        if (ApplicationContext.getCreditCardService().existsByCardNumber(cartNumber)) {
             account = ApplicationContext.getAccountService().getByCardNumber(cartNumber);
             for (int i = 0; i < 3; i++) {
                 String password = enterPassword();
-                if(account.getCreditCart().getPassword().equals(password)) {
-                    if(!account.isDisabled()) return true;
+                if (account.getCreditCart().getPassword().equals(password)) {
+                    if (!account.isDisabled()) return true;
                     else {
                         System.out.println("Your account is disabled!");
                         return false;
@@ -92,7 +94,7 @@ public class ATMApp {
             Integer cvv2 = enterCVV2();
             LocalDate expireDate = enterExpireDate();
             String secondPassword = enterSecondPassword();
-            if(checkCardTransferInfo(cvv2, expireDate, secondPassword, transferMoney)) {
+            if (checkCardTransferInfo(cvv2, expireDate, secondPassword, transferMoney)) {
                 doCardToCardMoneyTransfer(destinationCardNum, transferMoney);
             } else {
                 System.out.println("Your information is wrong!");
@@ -104,8 +106,18 @@ public class ATMApp {
         Account destinationAccount = ApplicationContext.getAccountService().getByCardNumber(destinationCardNum);
         account.setBalance(account.getBalance() - transferMoney - 600);
         destinationAccount.setBalance(destinationAccount.getBalance() + transferMoney);
+        account.getTransactionList().add(buildTransaction(transferMoney, destinationAccount));
         ApplicationContext.getAccountService().save(account);
         ApplicationContext.getAccountService().save(destinationAccount);
+    }
+
+    private static Transaction buildTransaction(Integer transferMoney, Account destinationAccount) {
+        return Transaction.builder()
+                .date(LocalDateTime.now())
+                .transactionType(TransactionType.TRANSFER)
+                .moneyAmount(transferMoney)
+                .transferAccountId(destinationAccount.getId())
+                .build();
     }
 
     private static boolean checkCardTransferInfo(Integer cvv2, LocalDate expireDate,
@@ -115,7 +127,7 @@ public class ATMApp {
         msg += account.getCreditCart().getSecondPassword().equals(secondPassword) ? "" : "Your second password is wrong!\n";
         msg += account.getCreditCart().getExpirationDate().equals(expireDate) ? "" : "Your expiration date is wrong!\n";
         System.out.println(msg);
-        return  msg.equals("");
+        return msg.equals("");
     }
 
     private static String enterSecondPassword() {
@@ -124,11 +136,11 @@ public class ATMApp {
     }
 
     private static String enterPassword() {
-        return new InputString("Enter your password: ","Your password must be 4 digit", "^\\d{4}$", null)
+        return new InputString("Enter your password: ", "Your password must be 4 digit", "^\\d{4}$", null)
                 .getStringInput();
     }
 
-        private static LocalDate enterExpireDate() {
+    private static LocalDate enterExpireDate() {
         String stringInput = new InputString("Enter your credit card expire date: ", "^\\d{4}-\\d{1,2}-\\d{1,2}$")
                 .getStringInput();
         String[] splitDate = stringInput.split("-");
