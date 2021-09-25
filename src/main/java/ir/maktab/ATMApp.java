@@ -111,11 +111,9 @@ public class ATMApp {
     private static boolean checkCardTransferInfo(Integer cvv2, LocalDate expireDate,
                                                  String secondPassword, Integer transferMoney) {
         String msg = "";
-        msg += account.getCreditCart().getCvv2().equals(cvv2) ? "" : "Your cvv2 is wrong!\n";
+        msg += account.getCreditCart().getCvv2().intValue() == cvv2.intValue() ? "" : "Your cvv2 is wrong!\n";
         msg += account.getCreditCart().getSecondPassword().equals(secondPassword) ? "" : "Your second password is wrong!\n";
         msg += account.getCreditCart().getExpirationDate().equals(expireDate) ? "" : "Your expiration date is wrong!\n";
-        msg += account.getBalance() - 5000 > transferMoney ? "" : "Your transfer money is wrong!\n";
-        msg += !account.isDisabled() ? "" : "Your account is disabled.\n";
         System.out.println(msg);
         return  msg.equals("");
     }
@@ -147,6 +145,7 @@ public class ATMApp {
         String msg = "";
         msg += ApplicationContext.getCreditCardService().existsByCardNumber(destinationCartNum) ? "" : "Your destination card number is wrong!\n";
         msg += transferMoney < 3_000_000 ? "" : "Your transfer money is greater then 3,000,000\n";
+        msg += account.getBalance() - 5600 >= transferMoney ? "" : "Your transfer money is not enough!\n";
         System.out.println(msg);
         return msg.equals("");
     }
@@ -157,7 +156,7 @@ public class ATMApp {
     }
 
     private static String enterCartNumber() {
-        return new InputString("Enter your source card number: ", "(^\\d{12}$)|(^\\d{16}$)")
+        return new InputString("Enter card number: ", "(^\\d{12}$)|(^\\d{16}$)")
                 .getStringInput();
     }
 }

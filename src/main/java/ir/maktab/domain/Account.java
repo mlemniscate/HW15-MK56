@@ -40,7 +40,7 @@ public class Account extends BaseEntity<Long> {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "credit_card_id")
     private CreditCard creditCart;
 
